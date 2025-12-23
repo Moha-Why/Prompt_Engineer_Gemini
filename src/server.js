@@ -28,10 +28,11 @@ app.post("/", async (req, res) => {
                     - Purpose and goal of the website
                     - Target audience
                     - Frontend features and layout (pages, components, navigation)
-                    - Backend features (API endpoints, database structure)
                     - Tech stack suggestions (React, Node.js, Express, PostgreSQL, etc.)
                     - UI/UX guidelines (colors, fonts, responsiveness)
-                    - Example content or sample data
+                    - return it as normal text, no markup, 
+                    - constraints
+                    - dont exceed 40 lines
                     3. Structure the output in **clear sections** so it can be directly used as an input for other AI tools.
                     Most importantly dont over engineer the prompt, make it in normal size, and dont create the mock data, tell the other ai to do it
                     Do **not** write any code yourself. Only create the complete prompt for another AI.
