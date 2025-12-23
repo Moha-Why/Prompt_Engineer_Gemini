@@ -9,7 +9,7 @@ dotenv.config()
 const app = express()
 
 app.use(cors({
-  origin: "http://localhost:5173", // your dev frontend
+  origin: "https://prompt-engineer-gemini-front-end.vercel.app/", // your dev frontend
   methods: ["GET","POST","OPTIONS"],
   credentials: true,
 }));
