@@ -8,7 +8,11 @@ dotenv.config()
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:5173", // your dev frontend
+  methods: ["GET","POST","OPTIONS"],
+  credentials: true,
+}));
 app.use(express.json())
 
 
