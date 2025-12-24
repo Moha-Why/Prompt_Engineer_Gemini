@@ -59,7 +59,7 @@ app.post("/", async (req, res) => {
             });
             console.log(chatCompletion)
 
-        return res.status(200).json({data: chatCompletion.choices[0].message})
+        return res.status(200).json({data: chatCompletion.choices[0].message.content})
         } catch(err) {
             return res.status(200).json({error: err})
         }
