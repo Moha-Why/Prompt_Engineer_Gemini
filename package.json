@@ -13,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "@google/genai": "^1.34.0",
+    "@huggingface/inference": "^4.13.5",
     "axios": "^1.13.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

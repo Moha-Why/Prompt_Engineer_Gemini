@@ -3,18 +3,15 @@ import confing from "dotenv"
 import dotenv from "dotenv"
 import cors from "cors"
 import { GoogleGenAI } from "@google/genai"
-import { OpenAI } from "openai";
+import { InferenceClient } from "@huggingface/inference";
 
 dotenv.config()
 
-const client = new OpenAI({
-	baseURL: "https://router.huggingface.co/v1",
-	apiKey: process.env.HF_TOKEN,
-});
 
 
 const app = express()
 
+const client = new InferenceClient(process.env.HF_TOKEN);
 app.use(cors());
 app.use(express.json())
 
@@ -22,11 +19,11 @@ app.use(express.json())
 app.post("/", async (req, res) => {
     try {
         const { prompt } = req.body
-        console.log(prompt)
+        // console.log(prompt)
         if (!prompt) {
-            res.status(400).json({error: "prompt is required"})
+            return res.status(400).json({error: "prompt is required"})
         }
-        const chatCompletion = await client.chat.completions.create({
+        const chatCompletion = await client.chatCompletion({
             model: "deepseek-ai/DeepSeek-R1:novita",
             messages: [
                 {
@@ -50,9 +47,9 @@ app.post("/", async (req, res) => {
                     - Structure the output into clear sections
                     - Do not exceed 40 lines
                     - Do not write any code
+                    - Do not return your thinking process or use any markup
                     - Do not create mock data; instruct the other AI to do it
-                    - Do not over-engineer the prompt
-                    `
+                    - Do not over-engineer the prompt`
                 },
                 {
                 role: "user",
@@ -60,10 +57,11 @@ app.post("/", async (req, res) => {
                 }
             ],
             });
+            console.log(chatCompletion)
 
-        res.status(200).json({data: chatCompletion.choices[0].message})
+        return res.status(200).json({data: chatCompletion.choices[0].message})
         } catch(err) {
-            res.status(200).json({error: err})
+            return res.status(200).json({error: err})
         }
         
 })
