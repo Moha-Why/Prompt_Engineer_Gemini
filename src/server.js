@@ -3,8 +3,15 @@ import confing from "dotenv"
 import dotenv from "dotenv"
 import cors from "cors"
 import { GoogleGenAI } from "@google/genai"
+import { OpenAI } from "openai";
 
 dotenv.config()
+
+const client = new OpenAI({
+	baseURL: "https://router.huggingface.co/v1",
+	apiKey: process.env.HF_TOKEN,
+});
+
 
 const app = express()
 
@@ -19,27 +26,42 @@ app.post("/", async (req, res) => {
         if (!prompt) {
             res.status(400).json({error: "prompt is required"})
         }
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: `You are an expert AI prompt engineer and web developer. I will give you a brief idea or concept for a website. Your task is to:
-                    1. Refactor this idea into a **fully detailed prompt** that can be given to another AI (like Claude, Cursor, or ChatGPT) to generate a working website or full-stack project.
-                    2. Include all necessary details such as:
+        const chatCompletion = await client.chat.completions.create({
+            model: "deepseek-ai/DeepSeek-R1:novita",
+            messages: [
+                {
+                    role: "system",
+                    content: `
+                    You are an expert AI prompt engineer and web developer.
+                    I will give you a brief idea or concept for a website.
+
+                    Your task is to:
+                    1. Refactor this idea into a fully detailed prompt that can be given to another AI to generate a working website or full-stack project.
+                    2. Include:
                     - Purpose and goal of the website
                     - Target audience
-                    - Frontend features and layout (pages, components, navigation)
-                    - Tech stack suggestions (React, Node.js, Express, PostgreSQL, etc.)
-                    - UI/UX guidelines (colors, fonts, responsiveness)
-                    - return it as normal text, no markup, 
-                    - constraints
-                    - dont exceed 40 lines
-                    3. Structure the output in **clear sections** so it can be directly used as an input for other AI tools.
-                    Most importantly dont over engineer the prompt, make it in normal size, and dont create the mock data, tell the other ai to do it
-                    Do **not** write any code yourself. Only create the complete prompt for another AI.
-                    Website idea: ${prompt}`,
-        });
-        // console.log(response.text);
-        res.status(200).json({data: response.text})
+                    - Frontend features and layout
+                    - Tech stack suggestions
+                    - UI/UX guidelines
+                    - Constraints
+
+                    Rules:
+                    - Return normal text only (no markdown)
+                    - Structure the output into clear sections
+                    - Do not exceed 40 lines
+                    - Do not write any code
+                    - Do not create mock data; instruct the other AI to do it
+                    - Do not over-engineer the prompt
+                    `
+                },
+                {
+                role: "user",
+                content: prompt // e.g. "A website for a local gym"
+                }
+            ],
+            });
+
+        res.status(200).json({data: chatCompletion.choices[0].message})
         } catch(err) {
             res.status(200).json({error: err})
         }
